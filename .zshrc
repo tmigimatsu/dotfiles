@@ -46,7 +46,7 @@ export ZSH="$HOME/dotfiles/.oh-my-zsh"
 # DISABLE_LS_COLORS="true"
 
 # Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
+DISABLE_AUTO_TITLE="true"
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -146,7 +146,9 @@ alias ll='ls -lhAN --color=always'
 # Color grep output
 alias grep='grep --color=auto'
 
-[[ ! -f ~/dotfiles/ssh.sh ]] || source ~/dotfiles/ssh.sh
+alias omg='sudo $(history -p !!)'
+
+[[ ! -f ~/dotfiles/private.sh ]] || source ~/dotfiles/private.sh
 
 cdl() {
 	cd "$*"
@@ -173,6 +175,12 @@ tp() {
 	tmux bind C-$1 last-window
 }
 
+conda_init() {
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+# <<< conda initialize <<<
+}
+
 #######################
 ### System Specific ###
 #######################
@@ -197,8 +205,6 @@ if [[ `uname` == 'Darwin' ]]; then
 
 	# Display color terminal
 	export CLICOLOR=1
-
-	alias omg='sudo $(history -p !!)'
 
 elif [[ `uname` == 'CYGWIN_NT-6.1' ]]; then
 	# X11 display environmental variable
@@ -232,11 +238,14 @@ fi
 ### Execute ###
 ###############
 
-if [[ -z "$TMUX" ]]; then
+if [[ -z $TMUX ]]; then
+	if [[ -n $SSH_CLIENT ]]; then
+		tp b
+	fi
 	if [[ -z $(pgrep tmux) ]]; then
 		tmux new-session
 	elif [[ -z $(tmux list-clients) ]]; then
-		tmux attach
+		tmux attach -d
 	fi
 fi
 
