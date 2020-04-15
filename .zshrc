@@ -135,6 +135,9 @@ zstyle ':vcs_info:git:*' formats '(%b)'
 
 # Vim mode
 bindkey -v
+autoload -U edit-command-line
+zle -N edit-command-line
+bindkey -M vicmd v edit-command-line
 
 # No match glob expansion
 setopt nonomatch
@@ -249,4 +252,4 @@ if [[ -z $TMUX ]]; then
 	fi
 fi
 
-# [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
