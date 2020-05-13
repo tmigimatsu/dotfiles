@@ -1,5 +1,10 @@
 # dotfiles
 
+## Installation
+```
+./setup.sh
+```
+
 ## Vim
 Install https://github.com/junegunn/vim-plug
 
