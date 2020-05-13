@@ -11,14 +11,21 @@ Plug 'scrooloose/nerdtree'           , { 'on': 'NERDTree' }
 Plug 'severin-lemaignan/vim-minimap' , { 'on': 'Minimap' }
 Plug 'jiangmiao/auto-pairs'
 Plug 'terryma/vim-multiple-cursors'
+" Plug 'itchyny/vim-cursorword'
 Plug 'godlygeek/tabular'
 Plug 'tpope/vim-surround'
 Plug 'tpope/vim-fugitive'
 Plug 'tpope/vim-obsession'
+Plug 'tpope/vim-sleuth'
+Plug 'sheerun/vim-polyglot'
 Plug 'airblade/vim-gitgutter'
-Plug 'w0rp/ale'
-Plug 'Valloric/YouCompleteMe'        , { 'do': 'python3 install.py --clang-completer' }
+Plug 'dense-analysis/ale'
+Plug 'ycm-core/YouCompleteMe'        , { 'do': 'python3 install.py --clangd-completer --ts-completer' }
 Plug 'vim-scripts/fakeclip'
+
+Plug 'google/vim-maktaba'
+Plug 'google/vim-codefmt'
+Plug 'google/vim-glaive'
 
 Plug 'SirVer/ultisnips'              , { 'for': 'tex' }
 Plug 'honza/vim-snippets'            , { 'for': 'tex' }
@@ -27,6 +34,7 @@ Plug 'LaTeX-Box-Team/LaTeX-Box'      , { 'for': 'tex'}
 Plug 'guns/xterm-color-table.vim'    , { 'on': 'XtermColorTable' }
 
 call plug#end()
+call glaive#Install()
 
 " Syntax theme
 syntax on
@@ -41,6 +49,7 @@ colorscheme molokai
 au BufNewFile,BufReadPost *.ino,*.pde set filetype=cpp  " Treat arduino filetypes as c++
 au BufNewFile,BufReadPost *.frag,*.vert set filetype=c  " Treat GLSL files as c
 " au BufNewFile,BufReadPost *.rs set filetype=rust        " Recognize Rust files
+set mouse=a
 
 " Syntax folding
 let php_folding = 1
@@ -64,6 +73,20 @@ autocmd FileType c,cpp,javascript,yaml setlocal tabstop=2 shiftwidth=2
 augroup ProjectSetup    " Use expandtab for certain projects
 	au BufRead,BufEnter */CMakeLists.txt set expandtab
 augroup END
+
+" augroup autoformat_settings
+"     autocmd FileType bzl AutoFormatBuffer buildifier
+"     autocmd FileType c,cpp,proto,javascript AutoFormatBuffer clang-format
+"     autocmd FileType dart AutoFormatBuffer dartfmt
+"     autocmd FileType go AutoFormatBuffer gofmt
+"     autocmd FileType gn AutoFormatBuffer gn
+"     autocmd FileType html,css,sass,scss,less,json AutoFormatBuffer js-beautify
+"     autocmd FileType java AutoFormatBuffer google-java-format
+"     autocmd FileType python AutoFormatBuffer yapf
+"     " Alternative: autocmd FileType python AutoFormatBuffer autopep8
+"     autocmd FileType rust AutoFormatBuffer rustfmt
+"     autocmd FileType vue AutoFormatBuffer prettier
+" augroup END
 
 function! CleanLeadingIndent(indent, numtabs)
 	if a:numtabs == -1
@@ -294,13 +317,29 @@ command Wq wq
 command W w
 command Q q
 
+" gdb
+nnoremap <Leader>dl :packadd termdebug<CR>:Termdebug<CR>
+nnoremap <Leader>dr :Run<CR>
+nnoremap <Leader>db :Break<CR>
+nnoremap <Leader>dd :Clear<CR>
+nnoremap <Leader>ds :Step<CR>
+nnoremap <Leader>dn :Over<CR>
+nnoremap <Leader>dc :Continue<CR>
+nnoremap <Leader>ds :Stop<CR>
+
 " Fzf
 nnoremap <C-p> :FZF<CR>
 nnoremap <Leader>f :GFiles<CR>
 nnoremap <Leader>b :Buffers<CR>
 
+" codefmt
+nnoremap <Leader>= :FormatCode<CR>
+vnoremap <Leader>= :FormatLines<CR>
+Glaive codefmt clang_format_style='Google'
+" Glaive codefmt yapf_executable='yapf --style="{based_on_style: google}"'
+
 " Ale
-nnoremap <silent> <Leader>l :ALELint<CR>
+nnoremap <Leader>l :ALELint<CR>
 " nnoremap <silent> <Leader>e :Error<CR>
 " let g:syntastic_python_checkers = ['pylint']
 " let g:syntastic_javascript_checkers = ['jshint']
@@ -319,7 +358,17 @@ let g:ale_lint_on_save = 0                " Lint on file save
 let g:ale_lint_on_text_changed = 'never'  " Lint on text change
 let g:ale_python_pylint_options = '--rcfile=~/dotfiles/.pylintrc'
 let g:ale_linters = {'cpp': ['clangtidy']}
-let g:ale_cpp_clangtidy_options = ['bugprone-*', 'clang-analyzer-*', 'google-*', 'performance-*', 'portability-*', 'readability-*', 'modernize-*']
+let g:ale_cpp_clangtidy_checks = ['bugprone-*', 'cppcoreguidelines-*', 'clang-analyzer-*', 'google-*', 'misc-*', 'modernize-*', 'performance-*', 'portability-*', 'readability-*',
+                                  \ '-cppcoreguidelines-non-private-member-variables-in-classes',
+                                  \ '-cppcoreguidelines-pro-bounds-array-to-pointer-decay',
+                                  \ '-cppcoreguidelines-pro-type-vararg',
+                                  \ '-misc-non-private-member-variables-in-classes',
+                                  \ '-modernize-pass-by-value',
+                                  \ '-modernize-use-nodiscard',
+                                  \ '-modernize-use-trailing-return-type',
+                                  \ '-readability-braces-around-statements',
+                                  \ ]
+" cppcoreguidelines-pro-bounds-array-to-pointer-decay: prevent assert() warnings
 " let g:ale_pattern_options = {'\v\.(c|cc|cpp|h|hh|hpp)$': {'ale_lint_on_save': 0}}
 " let g:ale_pattern_options_enabled = 1
 " let g:ale_sign_error = '>'

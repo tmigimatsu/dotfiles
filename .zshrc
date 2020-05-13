@@ -229,12 +229,20 @@ else
 	# Set PATH
 	export PATH="${PATH}:/opt/TurboVNC/bin:/opt/VirtualGL/bin"
 
+	# Add Rust path
+	export PATH="${PATH}:$HOME/.cargo/bin"
+
 	# Add source highlighting and binary file compatibility to less
 	export LESSOPEN="|lesspipe.sh %s"
 	export LESSCOLORIZER='pygmentize'
 	export LESS='-XR' # do not clear upon exiting, enable colors
 
 	alias grep='grep --color=auto'
+
+	alias kerb='krenew -K 60 -t'
+
+	# Enable shared Python library for YouCompleteMe/pyenv
+	export PYTHON_CONFIGURE_OPTS="--enable-shared"
 fi
 
 ###############
