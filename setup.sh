@@ -1,5 +1,11 @@
+#!/bin/bash
+
+set -e
+
+cd "$(dirname "$0")"
 git submodule init && git submodule update
-git clone https://github.com/zsh-users/zsh-autocomplete.git .oh-my-zsh/custom/plugins
+mkdir -p .oh-my-zsh/custom/plugins
+git clone https://github.com/zsh-users/zsh-autosuggestions.git .oh-my-zsh/custom/plugins/zsh-autosuggestions
 cd ~
 ln -s dotfiles/.tmux.conf .
 ln -s dotfiles/.tmux .
