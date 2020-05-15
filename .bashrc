@@ -65,6 +65,16 @@ lessc() {
 	pygmentize -g -f terminal256 -P style=monokai $1 | less -R
 }
 
+tp() {
+	tmux set -g prefix C-$1
+	tmux unbind C-a
+	tmux unbind C-b
+	tmux unbind C-q
+	tmux bind C-$1 send-prefix
+	tmux bind $1 last-window
+	tmux bind C-$1 last-window
+}
+
 #######################
 ### System Specific ###
 #######################
