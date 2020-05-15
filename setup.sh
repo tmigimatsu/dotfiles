@@ -10,6 +10,10 @@ cd ~
 ln -s dotfiles/.tmux.conf .
 ln -s dotfiles/.tmux .
 ln -s dotfiles/.vimrc .
+if [[ -f .bashrc ]]; then
+	mv .bashrc .bashrc.bak
+fi
+ln -s dotfiles/.bashrc .
 mkdir .vim
 cd .vim
 ln -s ../dotfiles/.vim/autoload .
