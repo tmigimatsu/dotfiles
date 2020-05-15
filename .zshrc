@@ -138,6 +138,7 @@ bindkey -v
 autoload -U edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd v edit-command-line
+bindkey '^\' edit-command-line
 
 # No match glob expansion
 setopt nonomatch
@@ -181,6 +182,17 @@ tp() {
 conda_init() {
 # >>> conda initialize >>>
 # !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/scr2/takatoki/anaconda3/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/scr2/takatoki/anaconda3/etc/profile.d/conda.sh" ]; then
+        . "/scr2/takatoki/anaconda3/etc/profile.d/conda.sh"
+    else
+        export PATH="/scr2/takatoki/anaconda3/bin:$PATH"
+    fi
+fi
+unset __conda_setup
 # <<< conda initialize <<<
 }
 
@@ -239,7 +251,7 @@ else
 
 	alias grep='grep --color=auto'
 
-	alias kerb='krenew -K 60 -t'
+	alias kerb='k5start -U -f /etc/krb5.keytab -ab -K 60 -- aklog'
 
 	# Enable shared Python library for YouCompleteMe/pyenv
 	export PYTHON_CONFIGURE_OPTS="--enable-shared"

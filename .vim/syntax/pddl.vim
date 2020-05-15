@@ -23,7 +23,7 @@ syn match pddlType ' - '
 let b:current_syntax = "pddl"
 highlight def link pddlBuiltin Function
 highlight def link pddlKeyword Keyword
-highlight def link pddlUses Constant 
+highlight def link pddlUses Constant
 highlight def link pddlVariable Type
-highlight def link pddlComment Comment 
+highlight def link pddlComment Comment
 highlight def link pddlType Operator

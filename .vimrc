@@ -358,7 +358,7 @@ let g:ale_lint_on_save = 0                " Lint on file save
 let g:ale_lint_on_text_changed = 'never'  " Lint on text change
 let g:ale_python_pylint_options = '--rcfile=~/dotfiles/.pylintrc'
 let g:ale_linters = {'cpp': ['clangtidy']}
-let g:ale_cpp_clangtidy_checks = ['bugprone-*', 'cppcoreguidelines-*', 'clang-analyzer-*', 'google-*', 'misc-*', 'modernize-*', 'performance-*', 'portability-*', 'readability-*',
+let g:ale_cpp_clangtidy_checks = ['bugprone-*', 'cppcoreguidelines-*', 'clang-analyzer-*', 'google-*', 'misc-*', 'modernize-*', 'performance-*', 'portability-*', 'readability-*', 
                                   \ '-cppcoreguidelines-non-private-member-variables-in-classes',
                                   \ '-cppcoreguidelines-pro-bounds-array-to-pointer-decay',
                                   \ '-cppcoreguidelines-pro-type-vararg',
