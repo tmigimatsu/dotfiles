@@ -4,6 +4,8 @@ set -e
 
 cd "$(dirname "$0")"
 git submodule init && git submodule update
+tic -x xterm-256color-italic.terminfo
+tic -x tmux-256color.terminfo
 mkdir -p .oh-my-zsh/custom/plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions.git .oh-my-zsh/custom/plugins/zsh-autosuggestions
 cd ~
