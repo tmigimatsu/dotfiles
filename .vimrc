@@ -1,3 +1,4 @@
+set encoding=utf-8
 let s:uname = system("uname")
 
 " Plugin manager
@@ -34,7 +35,12 @@ Plug 'LaTeX-Box-Team/LaTeX-Box'      , { 'for': 'tex'}
 Plug 'guns/xterm-color-table.vim'    , { 'on': 'XtermColorTable' }
 
 call plug#end()
-call glaive#Install()
+if !empty(glob(expand("<sfile>:p:h") . "/.vim/bundle/vim-glaive"))
+	let glaive_exists = 1
+	call glaive#Install()
+else
+	let glaive_exists = 0
+endif
 
 " Syntax theme
 syntax on
@@ -335,7 +341,9 @@ nnoremap <Leader>b :Buffers<CR>
 " codefmt
 nnoremap <Leader>= :FormatCode<CR>
 vnoremap <Leader>= :FormatLines<CR>
-Glaive codefmt clang_format_style='Google'
+if glaive_exists
+	Glaive codefmt clang_format_style='Google'
+endif
 " Glaive codefmt yapf_executable='yapf --style="{based_on_style: google}"'
 
 " Ale
