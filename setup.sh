@@ -14,6 +14,11 @@ sudo cp lesspipe.git/lesspipe.sh lesspipe.git/code2color /usr/local/bin
 # Zsh
 mkdir -p .oh-my-zsh/custom/plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions.git .oh-my-zsh/custom/plugins/zsh-autosuggestions
+ln -s dotfiles/.zshrc .
+
+# fzf
+git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
+~/.fzf/install --key-bindings --completion --no-update-rc
 
 # Tmux
 cd ~
