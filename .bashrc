@@ -34,6 +34,9 @@ PS1='\[\033[01;32m\]\u@\h\[\033[00m\]:\[\033[01;34m\]\w\[\033[00m\]\$ '
 ### Aliases ###
 ###############
 
+test -z "$TMUX" && (tmux attach -d || tmux new-session)
+return
+
 # h: human readable; A: do not list . and ..; N: print raw entry names
 alias ls='ls -hAN --color=always'
 alias ll='ls -lhAN --color=always'
