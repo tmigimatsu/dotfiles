@@ -252,6 +252,7 @@ if s:uname == "CYGWIN_NT-6.1\n"
 else
 	noremap <Leader>p "*p
 	noremap <Leader>y "*y
+	nnoremap <silent> <Leader>v :set invpaste paste?<CR>
 endif
 
 " Command line shortcuts
