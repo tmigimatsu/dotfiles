@@ -6,6 +6,16 @@
 ```
 
 ## Vim
+
+### If building from source
+```
+./configure --prefix="/afs/cs.stanford.edu/u/takatoki/.local" --with-features=huge --enable-multibyte --enable-python3interp --with-python3-config-dir=$(python-config --configdir) --enable-rubyinterp --enable-perlinterp --enable-cscope --enable-fail-if-missing
+make
+make install
+```
+
+YCM and Vim must be compiled with the same python version.
+
 Install https://github.com/junegunn/vim-plug
 
 ## Less Colorization
