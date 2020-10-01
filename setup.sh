@@ -14,10 +14,6 @@ sudo cp lesspipe.git/lesspipe.sh lesspipe.git/code2color /usr/local/bin
 # Zsh
 mkdir -p .oh-my-zsh/custom/plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions.git .oh-my-zsh/custom/plugins/zsh-autosuggestions
-if [[ -f .zshrc ]]; then
-	mv .zshrc .zshrc.bak
-fi
-ln -s dotfiles/.zshrc .
 
 # fzf
 git clone --depth 1 https://github.com/junegunn/fzf.git ~/.fzf
@@ -28,12 +24,18 @@ cd ~
 ln -s dotfiles/.tmux.conf .
 ln -s dotfiles/.tmux .
 
-# Vim
-ln -s dotfiles/.vimrc .
+# Shell
+if [[ -f .zshrc ]]; then
+	mv .zshrc .zshrc.bak
+fi
+ln -s dotfiles/.zshrc .
 if [[ -f .bashrc ]]; then
 	mv .bashrc .bashrc.bak
 fi
 ln -s dotfiles/.bashrc .
+
+# Vim
+ln -s dotfiles/.vimrc .
 mkdir .vim
 cd .vim
 ln -s ../dotfiles/.vim/autoload .
