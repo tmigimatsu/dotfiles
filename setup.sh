@@ -14,6 +14,9 @@ sudo cp lesspipe.git/lesspipe.sh lesspipe.git/code2color /usr/local/bin
 # Zsh
 mkdir -p .oh-my-zsh/custom/plugins
 git clone https://github.com/zsh-users/zsh-autosuggestions.git .oh-my-zsh/custom/plugins/zsh-autosuggestions
+if [[ -f .zshrc ]]; then
+	mv .zshrc .zshrc.bak
+fi
 ln -s dotfiles/.zshrc .
 
 # fzf
