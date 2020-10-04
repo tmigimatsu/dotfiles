@@ -233,6 +233,10 @@ else
 	# Add Rust path
 	export PATH="${PATH}:$HOME/.cargo/bin"
 
+	# Add Python path
+	export PATH="$HOME/.pyenv/bin:${PATH}"
+	if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+
 	# Add source highlighting and binary file compatibility to less
 	export LESSOPEN="|lesspipe.sh %s"
 	export LESSCOLORIZER='pygmentize'
