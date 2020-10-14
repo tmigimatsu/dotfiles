@@ -279,7 +279,10 @@ nnoremap <silent> <Leader>q :bp\|bd #<CR>
 " Close buffer in split above
 nnoremap <silent> <Leader>c <C-w>k :bd<CR>
 " Display tag
-nnoremap <Leader>? :echo synIDattr(synID(line("."), col("."), 1), "name")<CR>
+" nnoremap <Leader>? :echo synIDattr(synID(line("."), col("."), 1), "name")<CR>
+nnoremap <Leader>? :echo "hi<" . synIDattr(synID(line("."),col("."),1),"name") . '> trans<'
+\ . synIDattr(synID(line("."),col("."),0),"name") . "> lo<"
+\ . synIDattr(synIDtrans(synID(line("."),col("."),1)),"name") . ">"<CR>
 
 " Normal mode shortcuts
 
