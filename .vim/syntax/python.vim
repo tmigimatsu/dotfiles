@@ -92,8 +92,8 @@ syn match pythonImport          '^\s*\zsfrom\>'
 " Capitalized word not followed by '.'
 syn match pythonConstant "\<[A-Z_][A-Z0-9_]*\(\.\)\@!\>"
 syn region pythonFunctionParameters start="(" end=")\s*\(->\_[^:]*\)\?:" keepend contained contains=pythonParameterName,pythonStatement,pythonRepeat,pythonConditional,pythonOperator,pythonNumber,pythonHexNumber,pythonOctNumber,pythonBinNumber,pythonFloat,pythonString,pythonBytes,pythonBoolean,pythonNone,pythonSingleton,pythonBuiltinObj,pythonBuiltinFunc,pythonBuiltinType,pythonFunctionCall
-syn match pythonParameterName "\(\.\)\@<!\<[a-zA-Z_][a-zA-Z0-9_]*\>\s*\([,:=]\)\@=" contained
-syn match pythonArgumentName "\([(,]\)\@<=[a-zA-Z_][a-zA-Z0-9_]*\(=\)\@="
+syn match pythonParameterName "\(\.\|\(:\s*\)\)\@<!\<[a-zA-Z_][a-zA-Z0-9_]*\>\s*\([,:=)]\)\@=" contained
+syn match pythonArgumentName "\([(,]\_[[:space:][:tab:]]*\)\@<=[a-zA-Z_][a-zA-Z0-9_]*\(=\)\@="
 
 
 if s:Python2Syntax()
