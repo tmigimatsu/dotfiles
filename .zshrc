@@ -7,6 +7,7 @@
 
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
+[ -f ~/dotfiles/private.sh ] && source ~/dotfiles/private.sh
 
 # Path to your oh-my-zsh installation.
 export ZSH="$HOME/dotfiles/.oh-my-zsh"
@@ -152,8 +153,6 @@ alias grep='grep --color=auto'
 
 alias omg='sudo $(history -p !!)'
 
-[[ ! -f ~/dotfiles/private.sh ]] || source ~/dotfiles/private.sh
-
 cdl() {
 	cd "$*"
 	ls
@@ -210,32 +209,8 @@ if [[ `uname` == 'Darwin' ]]; then
 	# Display color terminal
 	export CLICOLOR=1
 
-elif [[ `uname` == 'CYGWIN_NT-6.1' ]]; then
-	# X11 display environmental variable
-	export DISPLAY=:0
-
-	alias vi='vim'
-	alias runx='run xwin -multiwindow -noclipboard &'
-	alias clear='printf "\033c"'
-
-	open() {
-		cygstart "$*"
-	}
-
-	set nodoswarning
 else
-	export GUROBI_HOME="$HOME/gurobi810/linux64"
-	export PATH="$HOME/.local/bin:$HOME/afs/.local/bin:${PATH}:${GUROBI_HOME}/bin"
-
-	# Set PATH
-	export PATH="${PATH}:/opt/TurboVNC/bin:/opt/VirtualGL/bin"
-
-	# Add Rust path
-	export PATH="${PATH}:$HOME/.cargo/bin"
-
-	# Add Python path
-	export PATH="$HOME/.pyenv/bin:${PATH}"
-	if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+	export PATH="${HOME}/.local/bin:${PATH}"
 
 	# Add source highlighting and binary file compatibility to less
 	export LESSOPEN="|lesspipe.sh %s"
@@ -244,10 +219,9 @@ else
 
 	alias grep='grep --color=auto'
 
+	# alias afs='kinit -R || kinit -l 3d -r 30d takatoki@CS.STANFORD.EDU'
+	alias afs='kinit && aklog && krenew -K 60 -t'
 	alias kerb='k5start -U -f /etc/krb5.keytab -ab -K 60 -- aklog'
-
-	# Enable shared Python library for YouCompleteMe/pyenv
-	export PYTHON_CONFIGURE_OPTS="--enable-shared"
 fi
 
 ###############

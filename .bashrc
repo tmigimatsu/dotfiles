@@ -1,5 +1,5 @@
 # If not running interactively, don't do anything
-[[ ! -f ~/dotfiles/home.sh ]] || source ~/dotfiles/home.sh
+[ -f ~/dotfiles/private.sh ] && source ~/dotfiles/private.sh
 [[ "$-" != *i* ]] && return
 
 #####################
@@ -122,11 +122,7 @@ elif [[ `uname` == 'CYGWIN_NT-6.1' ]]; then
 
 	set nodoswarning
 else
-	export GUROBI_HOME="$HOME/gurobi810/linux64"
-	export PATH="$HOME/.local/bin:$HOME/afs/.local/bin:${PATH}:${GUROBI_HOME}/bin"
-
-	# Set PATH
-	export PATH="${PATH}:/opt/TurboVNC/bin:/opt/VirtualGL/bin"
+	export PATH="${HOME}/.local/bin:${PATH}"
 
 	# Add source highlighting and binary file compatibility to less
 	export LESSOPEN="|lesspipe.sh %s"
@@ -134,6 +130,8 @@ else
 	export LESS='-XR' # do not clear upon exiting, enable colors
 
 	alias grep='grep --color=always'
+
+	alias afs='kinit && aklog'
 fi
 
 ###############
