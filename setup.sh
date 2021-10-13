@@ -44,3 +44,6 @@ ln -s ../dotfiles/.vim/syntax .
 mkdir .backup
 mkdir .swp
 mkdir .undo
+
+# Neovim
+# Install npm, go on linux
