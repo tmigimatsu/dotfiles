@@ -129,6 +129,11 @@ setopt prompt_subst
 RPROMPT=\$vcs_info_msg_0_
 zstyle ':vcs_info:git:*' formats '(%b)'
 
+# Add source highlighting and binary file compatibility to less.
+export LESSOPEN="|lesspipe.sh %s"
+export LESSCOLORIZER='pygmentize'
+export LESS='-XR' # do not clear upon exiting, enable colors
+
 ###############
 ### Aliases ###
 ###############
@@ -169,9 +174,6 @@ cpl() {
 
 tp() {
 	tmux set -g prefix C-$1
-	tmux unbind C-a
-	tmux unbind C-b
-	tmux unbind C-q
 	tmux bind $1 send-prefix
 	tmux bind C-$1 last-window
 }
@@ -182,45 +184,7 @@ conda_init() {
 # <<< conda initialize <<<
 }
 
-#######################
-### System Specific ###
-#######################
-
-if [[ `uname` == 'Darwin' ]]; then
-	# Add brew paths
-	export PATH="$(brew --prefix coreutils)/libexec/gnubin:/usr/local/bin:$PATH"
-
-	# Add julia path
-	# export PATH="/Applications/Julia-0.5.app/Contents/Resources/julia/bin:$PATH"
-
-	# Add Haskell stack path
-	export PATH="$HOME/.local/bin:$PATH"
-
-	# Add Python path
-	if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
-
-	# Add source highlighting and binary file compatibility to less
-	export LESSOPEN="|lesspipe.sh %s"
-	export LESSCOLORIZER='pygmentize'
-	export LESS='-XR' # do not clear upon exiting, enable colors
-
-	# Display color terminal
-	export CLICOLOR=1
-
-else
-	export PATH="${HOME}/.local/bin:/snap/bin:${PATH}"
-
-	# Add source highlighting and binary file compatibility to less
-	export LESSOPEN="|lesspipe.sh %s"
-	export LESSCOLORIZER='pygmentize'
-	export LESS='-XR' # do not clear upon exiting, enable colors
-
-	alias grep='grep --color=auto'
-
-	# alias afs='kinit -R || kinit -l 3d -r 30d takatoki@CS.STANFORD.EDU'
-	alias afs='kinit && aklog && krenew -K 60 -t'
-	alias kerb='k5start -U -f /etc/krb5.keytab -ab -K 60 -- aklog'
-fi
+export PATH="${HOME}/.local/bin:${PATH}"
 
 ###############
 ### Execute ###
@@ -238,3 +202,4 @@ if [[ -z $TMUX ]]; then
 fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
