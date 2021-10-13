@@ -80,7 +80,6 @@ plugins=(
 	fzf
 	osx
 	zsh-autosuggestions
-	zsh_reload
 )
 # git clone https://github.com/zsh-users/zsh-autosuggestions.git
 # .oh-my-zsh/custom/plugins/zsh-autosuggestions
@@ -173,8 +172,7 @@ tp() {
 	tmux unbind C-a
 	tmux unbind C-b
 	tmux unbind C-q
-	tmux bind C-$1 send-prefix
-	tmux bind $1 last-window
+	tmux bind $1 send-prefix
 	tmux bind C-$1 last-window
 }
 
@@ -210,7 +208,7 @@ if [[ `uname` == 'Darwin' ]]; then
 	export CLICOLOR=1
 
 else
-	export PATH="${HOME}/.local/bin:${PATH}"
+	export PATH="${HOME}/.local/bin:/snap/bin:${PATH}"
 
 	# Add source highlighting and binary file compatibility to less
 	export LESSOPEN="|lesspipe.sh %s"

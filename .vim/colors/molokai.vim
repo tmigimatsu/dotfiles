@@ -152,7 +152,8 @@ hi Ignore          guifg=#808080 guibg=bg
 hi IncSearch       guifg=#C4BE89 guibg=#000000
 
 " Gray
-hi ColorColumn                   guibg=#080808
+hi ColorColumn                   guibg=#080808 ctermbg=none
+" hi ColorColumn                   guibg=NONE ctermbg=none
 hi Comment         guifg=#808080
 hi LineNr          guifg=#808080 guibg=#080808
 hi PmenuSel                      guibg=#808080
@@ -165,7 +166,8 @@ hi GitGutterChangeDelete guifg=#808080 guibg=#080808 gui=bold cterm=bold
 "black":"#222222",
 "white":"#f7f1ff",
 " White
-hi Normal          guifg=#f7f1ff guibg=#000000
+hi Normal          guifg=#f7f1ff guibg=#000000 ctermbg=none
+" hi Normal          guifg=#f7f1ff guibg=NONE ctermbg=none
 
 hi Question        guifg=#66D9EF
 " marks

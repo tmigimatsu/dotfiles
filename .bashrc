@@ -94,7 +94,7 @@ if [[ `uname` == 'Darwin' ]]; then
 	export PATH="$HOME/.local/bin:$PATH"
 
 	# Add Python path
-	if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
+	# if which pyenv > /dev/null; then eval "$(pyenv init -)"; fi
 
 	# Add source highlighting and binary file compatibility to less
 	export LESSOPEN="|lesspipe.sh %s"

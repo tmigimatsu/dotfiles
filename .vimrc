@@ -21,16 +21,12 @@ Plug 'tpope/vim-sleuth'
 Plug 'sheerun/vim-polyglot'
 Plug 'airblade/vim-gitgutter'
 Plug 'dense-analysis/ale'
-Plug 'ycm-core/YouCompleteMe'        , { 'do': 'python3 install.py --clangd-completer --ts-completer' }
+" Plug 'ycm-core/YouCompleteMe'        , { 'do': 'python3 install.py --clangd-completer --ts-completer' }
 Plug 'vim-scripts/fakeclip'
 
 Plug 'google/vim-maktaba'
 Plug 'google/vim-codefmt'
 Plug 'google/vim-glaive'
-
-Plug 'SirVer/ultisnips'              , { 'for': 'tex' }
-Plug 'honza/vim-snippets'            , { 'for': 'tex' }
-Plug 'LaTeX-Box-Team/LaTeX-Box'      , { 'for': 'tex'}
 
 Plug 'guns/xterm-color-table.vim'    , { 'on': 'XtermColorTable' }
 
@@ -76,22 +72,24 @@ set copyindent          " Copy indent structure of previous line
 set preserveindent      " Preserve indent structure of current line
 autocmd FileType c,cmake,cpp,haskell,javascript,python,rust setlocal expandtab  " Use spaces for certain filetypes
 autocmd FileType c,cpp,javascript,yaml setlocal tabstop=2 shiftwidth=2
+autocmd FileType pddl setlocal noexpandtab
 augroup ProjectSetup    " Use expandtab for certain projects
 	au BufRead,BufEnter */CMakeLists.txt set expandtab
 augroup END
 
 augroup autoformat_settings
-	autocmd FileType bzl AutoFormatBuffer buildifier
-	autocmd FileType c,cpp,proto,javascript AutoFormatBuffer clang-format
-	autocmd FileType dart AutoFormatBuffer dartfmt
-	autocmd FileType go AutoFormatBuffer gofmt
-	autocmd FileType gn AutoFormatBuffer gn
-	autocmd FileType html,css,sass,scss,less,json AutoFormatBuffer js-beautify
-	autocmd FileType java AutoFormatBuffer google-java-format
-	autocmd FileType python AutoFormatBuffer black
+	" autocmd FileType bzl AutoFormatBuffer buildifier
+	" autocmd FileType c,cpp,proto,javascript AutoFormatBuffer clang-format
+	" autocmd FileType dart AutoFormatBuffer dartfmt
+	" autocmd FileType go AutoFormatBuffer gofmt
+	" autocmd FileType gn AutoFormatBuffer gn
+	" autocmd FileType html,css,sass,scss,less,json AutoFormatBuffer js-beautify
+	" autocmd FileType java AutoFormatBuffer google-java-format
+	" autocmd FileType python AutoFormatBuffer black
+	autocmd FileType python NoAutoFormatBuffer
 	" Alternative: autocmd FileType python AutoFormatBuffer autopep8
-	autocmd FileType rust AutoFormatBuffer rustfmt
-	autocmd FileType vue AutoFormatBuffer prettier
+	" autocmd FileType rust AutoFormatBuffer rustfmt
+	" autocmd FileType vue AutoFormatBuffer prettier
 augroup END
 
 function! CleanLeadingIndent(indent, numtabs)
@@ -368,8 +366,11 @@ nnoremap <Leader>l :ALELint<CR>
 let g:ale_lint_on_enter = 0               " Lint on file open
 let g:ale_lint_on_save = 0                " Lint on file save
 let g:ale_lint_on_text_changed = 'never'  " Lint on text change
+let g:ale_python_auto_pipenv = 1          " Use pipenv
+let g:ale_python_mypy_auto_pipenv = 1
+let g:ale_python_mypy_executable = 'pipenv'
 let g:ale_python_pylint_options = '--rcfile=~/dotfiles/.pylintrc'
-let g:ale_linters = {'cpp': ['clangtidy']}
+let g:ale_linters = {'cpp': ['clangtidy'], 'python': ['mypy']}
 let g:ale_cpp_clangtidy_checks = ['bugprone-*', 'cppcoreguidelines-*', 'clang-analyzer-*', 'google-*', 'misc-*', 'modernize-*', 'performance-*', 'portability-*', 'readability-*',
                                   \ '-cppcoreguidelines-non-private-member-variables-in-classes',
                                   \ '-cppcoreguidelines-pro-bounds-array-to-pointer-decay',
