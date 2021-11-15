@@ -47,3 +47,4 @@ mkdir .undo
 
 # Neovim
 # Install npm, go on linux
+# npm config set prefix ~/.local
