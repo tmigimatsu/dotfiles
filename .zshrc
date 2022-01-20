@@ -78,7 +78,7 @@ DISABLE_AUTO_TITLE="true"
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
 	fzf
-	osx
+	macos
 	zsh-autosuggestions
 )
 # git clone https://github.com/zsh-users/zsh-autosuggestions.git
@@ -176,6 +176,17 @@ tp() {
 	tmux set -g prefix C-$1
 	tmux bind $1 send-prefix
 	tmux bind C-$1 last-window
+}
+
+vgl() {
+	export DISPLAY=":$(expr $1 + 1)"
+	export VGL_DISPLAY=":$1"
+	echo "DISPLAY=$DISPLAY\nVGL_DISPLAY=$VGL_DISPLAY"
+}
+
+disp() {
+	export DISPLAY=":$1"
+	echo "DISPLAY=$DISPLAY"
 }
 
 conda_init() {

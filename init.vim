@@ -8,13 +8,15 @@ set expandtab     " Expand tab to spaces.
 set nojoinspaces  " Use single spaces between sentences.
 
 set mouse=a                " Mouse support for all modes.
-set cursorline             " Highlight current line
+set termguicolors          " True colors.
+set cursorline             " Highlight current line.
 set relativenumber number  " Display relative line numbers.
-set textwidth=80           " Set wrapping width
-let &colorcolumn=join(range(100,320),",")   " Display margin
+set textwidth=80           " Set wrapping width.
+let &colorcolumn=join(range(100,320),",")   " Display margin.
+set list                   " Display whitespace.
 set listchars=tab:¦\ ,trail:·,nbsp:+,extends:),precedes:(
-let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"  " Bold on.
-let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"  " Bold off.
+let &t_8f = "\<Esc>[38;2;%lu;%lu;%lum"  " Foreground true color.
+let &t_8b = "\<Esc>[48;2;%lu;%lu;%lum"  " Background true color.
 set t_ZH=[3m   " Italics on.
 set t_ZR=[23m  " Italics off.
 
@@ -85,22 +87,81 @@ nnoremap <Leader>e :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 nnoremap [e :lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap ]e :lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap K :lua vim.lsp.buf.hover()<CR>
-nnoremap <C-k> :lua vim.lsp.buf.signature_help()<CR>
-nnoremap <C-]> :lua vim.lsp.buf.definition()<CR>
+nnoremap <Leader>s :lua vim.lsp.buf.signature_help()<CR>
+nnoremap <Leader>S :lua vim.lsp.buf.document_symbol()<CR>
 nnoremap gd :lua vim.lsp.buf.definition()<CR>
 nnoremap gi :lua vim.lsp.buf.implementation()<CR>
 nnoremap gD :lua vim.lsp.buf.declaration()<CR>
 nnoremap <Leader>D :lua vim.lsp.buf.type_definition()<CR>
 nnoremap <Leader>rn :lua vim.lsp.buf.rename()<CR>
 nnoremap gr :lua vim.lsp.buf.references()<CR>
-nnoremap <Leader>= :lua vim.lsp.buf.formatting()<CR>
-vnoremap <Leader>= :lua vim.lsp.buf.range_formatting()<CR>
+nnoremap <Leader>f :lua vim.lsp.buf.formatting()<CR>
+vnoremap <Leader>f :lua vim.lsp.buf.range_formatting()<CR>
+" Go to entry in references list.
+nnoremap g<CR> <CR>
+
+function! CleanLeadingIndent(indent, numtabs)
+	if a:numtabs == -1
+		" Replace with as many tabs as possible
+		let spaces = repeat(' ', &tabstop)
+		let result = substitute(a:indent, spaces, '\t', 'g')
+	else
+		" Replace up to specified number of tabs
+		let spaces = repeat(' ', &tabstop * a:numtabs)
+		let tabs   = repeat('\t', a:numtabs)
+		let result = substitute(a:indent, spaces, tabs, '')
+	endif
+	return result
+endfunction
+
+function! CleanIndent(line1, line2, align)
+	if a:align
+		" Count number of tabs on previous line
+		let prevline = a:line1 - 1
+		let tabtokens = map(split(getline(prevline), '\t', 1), {key, val -> strlen(val) == 0})
+		let numtabs = index(tabtokens, 0)
+		if numtabs == -1
+			let numtabs = len(tabtokens) - 1
+		endif
+	else
+		let numtabs = -1
+	endif
+
+	" Save current position
+	let savepos = getpos('.')
+
+	" Change all tabs to spaces
+	let etcurr = &et
+	set et
+	execute a:line1 . ',' . a:line2 . 'retab'
+
+	" Removing trailing whitespace
+	execute a:line1 . ',' . a:line2 . 's/\s\+$//e'
+	call histdel('search', -1)
+
+	" Restore expandtab status
+	if etcurr == 1
+		call setpos('.', savepos)
+		return
+	endif
+	set noet
+
+	" Change leading indentation to tabs/spaces
+	execute a:line1 . ',' . a:line2 . 's/^\s\+/\=CleanLeadingIndent(submatch(0),' . numtabs . ')/e'
+	call histdel('search', -1)
+	call setpos('.', savepos)
+endfunction
+
+command! -range Retab call CleanIndent(<line1>,<line2>,0)
+command! -range RetabAlign call CleanIndent(<line1>,<line2>,1)
+noremap <silent> <Leader>t :Retab<CR>
+noremap <silent> <Leader>a :RetabAlign<CR>
 
 """""""""""""
 " Filetypes "
 """""""""""""
 autocmd FileType c,cpp,javascript,yaml setlocal tabstop=2 shiftwidth=2
-autocmd FileType pddl setlocal noexpandtab
+autocmd FileType html,javascript,pddl setlocal noexpandtab
 
 """""""""""
 " Plugins "
@@ -113,27 +174,31 @@ if empty(glob(plug_dir))
   autocmd VimEnter * PlugInstall --sync | source $MYVIMRC
 endif
 
+" Automatically install LSP servers.
 function InstallLspServers()
-    execute '!npm install -g --prefix=~/.local '
+    execute '!npm install -g '
         \ . 'bash-language-server '
         \ . 'vscode-langservers-extracted '
-        \ . 'pyright '
         \ . 'typescript typescript-language-server '
         \ . 'vim-language-server '
         \ . 'yaml-language-server '
         \ . 'prettier '
     execute '!pip install '
         \ . 'cmake-language-server '
-        \ . 'black '
-        \ . 'mypy '
-        \ . 'flake8 '
+        \ . 'python-lsp-server '
+        \ . 'python-lsp-black '
+        \ . 'pyls-flake8 '
+        \ . 'pylsp-mypy '
     let uname = system('uname')
     if uname == 'Darwin'
         execute '!brew install efm-langserver'
     else
         execute '!go install github.com/mattn/efm-langserver@latest'
     endif
+    " sudo apt install clangd-13 clang-format-13 clang-tidy-13
 endfunction
+
+" Plug.
 call plug#begin(stdpath('data') . '/plugged')
     Plug 'airblade/vim-gitgutter'    " Git gutter.
     Plug 'hrsh7th/cmp-nvim-lsp'      " LSP plugin for auto-completion.
@@ -143,19 +208,17 @@ call plug#begin(stdpath('data') . '/plugged')
     Plug 'junegunn/fzf.vim'          " Vim extras for fuzzy finder.
     Plug 'neovim/nvim-lspconfig', { 'do': { -> InstallLspServers() } }  " Automatically launch language servers.
     Plug 'nvim-treesitter/nvim-treesitter', { 'branch': '0.5-compat', 'do': ':TSUpdate' }  " LSP syntax highlighting.
+    Plug 'numToStr/Comment.nvim'     " Comment code.
     Plug 'tmigimatsu/barbar.nvim'    " Reorderable tabs.
-    Plug 'scrooloose/nerdcommenter'  " Comment code.
     Plug 'scrooloose/nerdtree', { 'on': 'NERDTree' }  " File explorer.
+    " Plug 'ray-x/lsp_signature.nvim'  " LSP popup for function signatures.
     Plug 'tpope/vim-surround'        " Surround characters.
     Plug 'tpope/vim-fugitive'        " Git integration.
     Plug 'tpope/vim-sleuth'          " Preserve file tab settings.
     Plug 'vim-airline/vim-airline'   " Status line.
 call plug#end()
 
-" Airline
-"let g:airline#extensions#tabline#enabled = 1  " Buffer line.
-
-" Barbar
+" Barbar.
 let bufferline = get(g:, 'bufferline', {})
 let bufferline.animation = v:false
 let bufferline.icons = v:false
@@ -173,21 +236,24 @@ nnoremap <silent> <A-h> :BufferMovePrevious<CR>
 nnoremap <silent> ¬ :BufferMoveNext<CR>
 nnoremap <silent> ˙ :BufferMovePrevious<CR>
 
-" FZF
+" FZF.
 nnoremap <C-p> :FZF<CR>
-nnoremap <silent> <C-f> :GFiles<CR>
-nnoremap <silent> <C-b> :Buffers<CR>
+nnoremap <silent> <Leader>f :GFiles<CR>
+nnoremap <silent> <Leader>b :Buffers<CR>
 
-" NERDTree
-nnoremap <silent> <C-o> :NERDTree<CR>
+" NERDTree.
+nnoremap <silent> <Leader>o :NERDTree<CR>
 let g:NERDTreeShowLineNumbers = 1  " Show line numbers.
 autocmd FileType nerdtree setlocal relativenumber
 
-" One Dark
+" One Dark.
 let g:onedark_terminal_italics = 1
+" white/foreground: #abb2bf, comment_grey: #5c6370;59
 let g:onedark_color_overrides = {
-    \ "comment_grey": {"gui": "#5c6370", "cterm": "244", "cterm16": "7" },
+    \ "comment_grey": {"gui": "#707884", "cterm": "244", "cterm16": "7" },
 \}
+    "foreground": {"gui": "#b1bac7", "cterm": "145", "cterm16": "15" },
+    "white": {"gui": "#b1bac7", "cterm": "145", "cterm16": "15" },
 
 augroup colorset
     autocmd!
@@ -197,7 +263,9 @@ augroup colorset
     let s:black = s:colors.black
     let s:foreground = s:colors.foreground
     let s:background = s:colors.background
+    let s:comment_grey = s:colors.comment_grey
     let s:cursor_grey = s:colors.cursor_grey
+    " Barbar colors.
     autocmd ColorScheme * call onedark#set_highlight("BufferCurrent", { "fg": s:black, "bg": s:green })
     autocmd ColorScheme * call onedark#set_highlight("BufferCurrentMod", { "fg": s:black, "bg": s:blue })
     autocmd ColorScheme * call onedark#set_highlight("BufferCurrentIndex", { "fg": s:black, "bg": s:green })
@@ -211,83 +279,100 @@ augroup colorset
     autocmd ColorScheme * call onedark#set_highlight("BufferInactiveIndex", { "fg": s:green, "bg": s:background })
     autocmd ColorScheme * call onedark#set_highlight("BufferInactiveLetter", { "fg": s:green, "bg": s:background })
     autocmd ColorScheme * call onedark#set_highlight("BufferTabpageFill", { "fg": s:foreground, "bg": s:cursor_grey })
+    " LSP signature colors.
+    autocmd ColorScheme * call onedark#set_highlight("NormalFloat", { "fg": s:foreground, "bg": s:background })
+    autocmd ColorScheme * call onedark#set_highlight("FloatBorder", { "fg": s:comment_grey, "bg": s:background })
 augroup END
 augroup colorextend
     autocmd!
     let s:colors = onedark#GetColors()
     let s:comment_grey = s:colors.comment_grey
+    " Make line numbers more visible.
     autocmd ColorScheme * call onedark#extend_highlight("LineNr", { "fg": s:comment_grey })
 augroup END
 
 colorscheme onedark
+"colorscheme molokai
 
 """""""
 " Lua "
 """""""
 
 lua << EOF
+require("Comment").setup()
+
 -- NeoVim LSP.
 -- https://github.com/neovim/neovim/blob/master/runtime/lua/vim/lsp.lua
 local lspconfig = require("lspconfig")
+
+-- Disable LSP diagnostics in insert mode.
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
+    vim.lsp.diagnostic.on_publish_diagnostics, { update_in_insert = false }
+)
 
 -- Add LSP completion capabilities via cmp-nvim-lsp.
 local capabilities = vim.lsp.protocol.make_client_capabilities()
 capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
 
 local servers = {
-    "bashls",    -- sudo npm install -g bash-language-server
-    "clangd",
+    "bashls",    -- npm install -g bash-language-server
     "cmake",     -- pip install cmake-language-server
-    "cssls",     -- sudo npm install -g vscode-langservers-extracted
-    "html",      -- sudo npm install -g vscode-langservers-extracted
-    "jsonls",    -- sudo npm install -g vscode-langservers-extracted
-    "pyright",   -- sudo npm install -g pyright
-    "tsserver",  -- sudo npm install -g typescript typescript-language-server
-    "vimls",     -- sudo npm install -g vim-language-server
-    "yamlls",    -- sudo npm install -g yaml-language-server
+    "cssls",     -- npm install -g vscode-langservers-extracted
+    "html",      -- npm install -g vscode-langservers-extracted
+    "jsonls",    -- npm install -g vscode-langservers-extracted
+    "tsserver",  -- npm install -g typescript typescript-language-server
+    "vimls",     -- npm install -g vim-language-server
+    "yamlls",    -- npm install -g yaml-language-server
 }
 for _, lsp in ipairs(servers) do
     lspconfig[lsp].setup {
         capabilities = capabilities,
     }
 end
+lspconfig.pylsp.setup {
+  capabilities = capabilities,
+  settings = {
+    pylsp = {
+      plugins = {
+        flake8 = {
+          maxLineLength = 160,
+        },
+      },
+    },
+  },
+}
+lspconfig.clangd.setup {
+  capabilities = capabilities,
+  cmd = { "clangd", "--background-index", "--clang-tidy", "--fallback-style=google" },
+}
 
 -- Add extra LSP servers via efm.
 -- go install github.com/mattn/efm-langserver@latest
 -- brew install efm-langserver
 -- https://github.com/lukas-reineke/dotfiles/blob/master/vim/lua/lsp/init.lua
-local black = {  -- pip install black
-    formatCommand = "black --fast -",
+local prettierCss = {  -- npm install -g prettier
+    formatCommand = "prettier ${--tab-width:tabWidth} ${--single-quote:singleQuote} --parser css",
     formatStdin = true,
 }
-local clangformat = {
-    formatCommand = "clang-format -style=google -",
+local prettierHtml = {  -- npm install -g prettier
+    formatCommand = "prettier ${--tab-width:tabWidth} ${--single-quote:singleQuote} --use-tabs=true --parser html",
     formatStdin = true,
 }
-local mypy = {  -- pip install mypy
-    lintCommand = "mypy --show-column-numbers --ignore-missing-imports",
-    lintFormats = {
-        "%f:%l:%c: %trror: %m",
-        "%f:%l:%c: %tarning: %m",
-        "%f:%l:%c: %tote: %m",
-    },
-    lintSource = "mypy",
+local prettierJson = {  -- npm install -g prettier
+    formatCommand = "prettier ${--tab-width:tabWidth} --parser json",
+    formatStdin = true,
 }
-local flake8 = {  -- pip install flake8
-    lintCommand = "flake8 --max-line-length 160 --format '%(path)s:%(row)d:%(col)d: %(code)s %(code)s %(text)s' --stdin-display-name ${INPUT} -",
-    lintStdin = true,
-    lintIgnoreExitCode = true,
-    lintFormats = { "%f:%l:%c: %t%n%n%n %m" },
-    lintSource = "flake8",
+local prettierMarkdown = {  -- npm install -g prettier
+    formatCommand = "prettier ${--tab-width:tabWidth} --parser markdown",
+    formatStdin = true,
 }
-local prettier = {  -- sudo npm install -g prettier
-    formatCommand = ([[
-        $([ -n "$(command -v node_modules/.bin/prettier)" ] && echo "node_modules/.bin/prettier" || echo "prettier")
-        ${--config-precedence:configPrecedence}
-        ${--tab-width:tabWidth}
-        ${--single-quote:singleQuote}
-        ${--trailing-comma:trailingComma}
-    ]]):gsub("\n", ""),
+local prettierXml = {  -- npm install -g prettier
+    formatCommand = "prettier --parser xml ${--tab-width:tabWidth} --print-width=160 --stdin-filepath=${INPUT}",
+    formatStdin = true,
+}
+local prettierYaml = {  -- npm install -g prettier
+    formatCommand = "prettier ${--tab-width:tabWidth} --parser yaml",
+    formatStdin = true,
 }
 lspconfig.efm.setup {
     init_options = { documentFormatting = true },
@@ -295,15 +380,15 @@ lspconfig.efm.setup {
     settings = {
         rootMarkers = { ".git/" },
         languages = {
-            cpp = { clangformat },
-            python = { black, mypy, flake8 },
-            yaml = { prettier },
-            json = { prettier },
-            html = { prettier },
-            css = { prettier },
-            markdown = { prettier },
+            css = { prettierCss },
+            html = { prettierHtml },
+            json = { prettierJson },
+            markdown = { prettierMarkdown },
+            xml = { prettierXml },
+            yaml = { prettierYaml },
         },
     },
+    filetypes = { "css", "html", "json", "markdown", "xml", "yaml" },
 }
 
 -- nvim-cmp.
@@ -311,7 +396,7 @@ local cmp = require "cmp"
 cmp.setup {
     mapping = {
         ["<C-Space>"] = cmp.mapping.complete(),
-        ["<CR>"] = cmp.mapping.confirm {
+        ["<C-CR>"] = cmp.mapping.confirm {
             behavior = cmp.ConfirmBehavior.Replace,
             select = true,
         },
@@ -335,9 +420,11 @@ cmp.setup {
     },
 }
 
+-- LSP signature.
+-- require("lsp_signature").setup()
+
 -- NVim Treesitter.
-local treesitter = require "nvim-treesitter.configs"
-treesitter.setup {
+require("nvim-treesitter.configs").setup {
     ensure_installed = "maintained",  -- Exclude experimental parsers.
     highlight = {
         enable = true,
