@@ -183,12 +183,12 @@ function InstallLspServers()
         \ . 'vim-language-server '
         \ . 'yaml-language-server '
         \ . 'prettier '
-    execute '!pip install '
-        \ . 'cmake-language-server '
-        \ . 'python-lsp-server '
+    execute '!pipx install cmake-language-server'
+    execute '!pipx install python-lsp-server && pipx inject python-lsp-server '
         \ . 'python-lsp-black '
         \ . 'pyls-flake8 '
         \ . 'pylsp-mypy '
+    execute '!ln -s ~/.local/pipx/venvs/python-lsp-server/bin/flake8 ~/.local/bin'
     let uname = system('uname')
     if uname == 'Darwin'
         execute '!brew install efm-langserver'
@@ -238,7 +238,7 @@ nnoremap <silent> ˙ :BufferMovePrevious<CR>
 
 " FZF.
 nnoremap <C-p> :FZF<CR>
-nnoremap <silent> <Leader>f :GFiles<CR>
+nnoremap <silent> <Leader>g :GFiles<CR>
 nnoremap <silent> <Leader>b :Buffers<CR>
 
 " NERDTree.
