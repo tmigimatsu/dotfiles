@@ -8,6 +8,11 @@ git submodule init && git submodule update
 # 256 color
 tic -x xterm-256color-italic.terminfo
 tic -x tmux-256color.terminfo
+
+## nvim
+ln -s dotfiles/init.vim ../.config/nvim/init.vim
+## MAC up to here.
+
 sudo cp lesspipe.git/lesspipe.sh lesspipe.git/code2color /usr/local/bin
 # pip3 install Pygments
 

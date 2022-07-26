@@ -82,6 +82,8 @@ nnoremap <silent> <Leader>w :w<CR>
 nnoremap <silent> <Leader><Bslash> :noh<CR>
 " cd to current directory.
 nnoremap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
+" Yank to clipboard.
+vnoremap <silent> <Leader>y "*y
 
 nnoremap <Leader>e :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 nnoremap [e :lua vim.lsp.diagnostic.goto_prev()<CR>
