@@ -188,6 +188,7 @@ function InstallLspServers()
         \ . 'python-lsp-black '
         \ . 'pyls-flake8 '
         \ . 'pylsp-mypy '
+        \ . 'pylint '
     execute '!ln -s ~/.local/pipx/venvs/python-lsp-server/bin/flake8 ~/.local/bin'
     let uname = system('uname')
     if uname == 'Darwin'
@@ -337,6 +338,7 @@ lspconfig.pylsp.setup {
         flake8 = {
           maxLineLength = 160,
         },
+        pylint = { enabled = false },
       },
     },
   },
