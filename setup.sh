@@ -11,8 +11,13 @@ tic -x tmux-256color.terminfo
 
 ## nvim
 mkdir -p ../.config/nvim
-ln -s dotfiles/init.vim ../.config/nvim/init.vim
+ln -s ../../dotfiles/init.vim ../.config/nvim/init.vim
 ## MAC up to here.
+curl -LO https://github.com/neovim/neovim/releases/latest/download/nvim.appimage
+chmod +x nvim.appimage
+ln -s nvim.appimage nvim
+ln -s nvim.appimage vim
+curl -fLo ~/.var/app/io.neovim.nvim/data/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
 sudo cp lesspipe.git/lesspipe.sh lesspipe.git/code2color /usr/local/bin
 # pip3 install Pygments
