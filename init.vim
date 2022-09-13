@@ -83,7 +83,7 @@ nnoremap <silent> <Leader><Bslash> :noh<CR>
 " cd to current directory.
 nnoremap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
 " Yank to clipboard.
-vnoremap <silent> <Leader>y "*y
+vnoremap <silent> <Leader>y :OSCYank<CR>
 
 nnoremap <Leader>e :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
 nnoremap [e :lua vim.lsp.diagnostic.goto_prev()<CR>
@@ -103,55 +103,55 @@ vnoremap <Leader>f :lua vim.lsp.buf.range_formatting()<CR>
 nnoremap g<CR> <CR>
 
 function! CleanLeadingIndent(indent, numtabs)
-	if a:numtabs == -1
-		" Replace with as many tabs as possible
-		let spaces = repeat(' ', &tabstop)
-		let result = substitute(a:indent, spaces, '\t', 'g')
-	else
-		" Replace up to specified number of tabs
-		let spaces = repeat(' ', &tabstop * a:numtabs)
-		let tabs   = repeat('\t', a:numtabs)
-		let result = substitute(a:indent, spaces, tabs, '')
-	endif
-	return result
+    if a:numtabs == -1
+        " Replace with as many tabs as possible
+        let spaces = repeat(' ', &tabstop)
+        let result = substitute(a:indent, spaces, '\t', 'g')
+    else
+        " Replace up to specified number of tabs
+        let spaces = repeat(' ', &tabstop * a:numtabs)
+        let tabs   = repeat('\t', a:numtabs)
+        let result = substitute(a:indent, spaces, tabs, '')
+    endif
+    return result
 endfunction
 
 function! CleanIndent(line1, line2, align)
-	if a:align
-		" Count number of tabs on previous line
-		let prevline = a:line1 - 1
-		let tabtokens = map(split(getline(prevline), '\t', 1), {key, val -> strlen(val) == 0})
-		let numtabs = index(tabtokens, 0)
-		if numtabs == -1
-			let numtabs = len(tabtokens) - 1
-		endif
-	else
-		let numtabs = -1
-	endif
+    if a:align
+        " Count number of tabs on previous line
+        let prevline = a:line1 - 1
+        let tabtokens = map(split(getline(prevline), '\t', 1), {key, val -> strlen(val) == 0})
+        let numtabs = index(tabtokens, 0)
+        if numtabs == -1
+            let numtabs = len(tabtokens) - 1
+        endif
+    else
+        let numtabs = -1
+    endif
 
-	" Save current position
-	let savepos = getpos('.')
+    " Save current position
+    let savepos = getpos('.')
 
-	" Change all tabs to spaces
-	let etcurr = &et
-	set et
-	execute a:line1 . ',' . a:line2 . 'retab'
+    " Change all tabs to spaces
+    let etcurr = &et
+    set et
+    execute a:line1 . ',' . a:line2 . 'retab'
 
-	" Removing trailing whitespace
-	execute a:line1 . ',' . a:line2 . 's/\s\+$//e'
-	call histdel('search', -1)
+    " Removing trailing whitespace
+    execute a:line1 . ',' . a:line2 . 's/\s\+$//e'
+    call histdel('search', -1)
 
-	" Restore expandtab status
-	if etcurr == 1
-		call setpos('.', savepos)
-		return
-	endif
-	set noet
+    " Restore expandtab status
+    if etcurr == 1
+        call setpos('.', savepos)
+        return
+    endif
+    set noet
 
-	" Change leading indentation to tabs/spaces
-	execute a:line1 . ',' . a:line2 . 's/^\s\+/\=CleanLeadingIndent(submatch(0),' . numtabs . ')/e'
-	call histdel('search', -1)
-	call setpos('.', savepos)
+    " Change leading indentation to tabs/spaces
+    execute a:line1 . ',' . a:line2 . 's/^\s\+/\=CleanLeadingIndent(submatch(0),' . numtabs . ')/e'
+    call histdel('search', -1)
+    call setpos('.', savepos)
 endfunction
 
 command! -range Retab call CleanIndent(<line1>,<line2>,0)
@@ -209,13 +209,16 @@ call plug#begin(stdpath('data') . '/plugged')
     Plug 'joshdick/onedark.vim'      " One Dark colorscheme.
     Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }  " Fuzzy finder.
     Plug 'junegunn/fzf.vim'          " Vim extras for fuzzy finder.
+    Plug 'kyazdani42/nvim-tree.lua', { 'on': 'NvimTreeToggle' }  " File explorer.
+    " Plug 'kyazdani42/nvim-web-devicons'  " File icons.
+    Plug 'kylechui/nvim-surround'    " Surround characters.
+    Plug 'ojroques/vim-oscyank'      " Yank to local clipboard.
     Plug 'neovim/nvim-lspconfig', { 'do': { -> InstallLspServers() } }  " Automatically launch language servers.
     Plug 'nvim-treesitter/nvim-treesitter', { 'branch': '0.5-compat', 'do': ':TSUpdate' }  " LSP syntax highlighting.
     Plug 'numToStr/Comment.nvim'     " Comment code.
     Plug 'tmigimatsu/barbar.nvim'    " Reorderable tabs.
-    Plug 'scrooloose/nerdtree', { 'on': 'NERDTree' }  " File explorer.
-    " Plug 'ray-x/lsp_signature.nvim'  " LSP popup for function signatures.
-    Plug 'tpope/vim-surround'        " Surround characters.
+    " Plug 'scrooloose/nerdtree', { 'on': 'NERDTree' }  " File explorer.
+    " Plug 'tpope/vim-surround'        " Surround characters.
     Plug 'tpope/vim-fugitive'        " Git integration.
     Plug 'tpope/vim-sleuth'          " Preserve file tab settings.
     Plug 'vim-airline/vim-airline'   " Status line.
@@ -245,9 +248,10 @@ nnoremap <silent> <Leader>g :GFiles<CR>
 nnoremap <silent> <Leader>b :Buffers<CR>
 
 " NERDTree.
-nnoremap <silent> <Leader>o :NERDTree<CR>
-let g:NERDTreeShowLineNumbers = 1  " Show line numbers.
-autocmd FileType nerdtree setlocal relativenumber
+nnoremap <silent> <Leader>o :NvimTreeToggle<CR>
+" nnoremap <silent> <Leader>o :NERDTree<CR>
+" let g:NERDTreeShowLineNumbers = 1  " Show line numbers.
+" autocmd FileType nerdtree setlocal relativenumber
 
 " One Dark.
 let g:onedark_terminal_italics = 1
@@ -261,9 +265,16 @@ let g:onedark_color_overrides = {
 augroup colorset
     autocmd!
     let s:colors = onedark#GetColors()
-    let s:blue = s:colors.blue
-    let s:green = s:colors.green
     let s:black = s:colors.black
+    let s:blue = s:colors.blue
+    let s:cyan = s:colors.cyan
+    let s:dark_red = s:colors.dark_red
+    let s:dark_yellow = s:colors.dark_yellow
+    let s:green = s:colors.green
+    let s:purple = s:colors.purple
+    let s:red = s:colors.red
+    let s:yellow = s:colors.yellow
+    let s:white = s:colors.white
     let s:foreground = s:colors.foreground
     let s:background = s:colors.background
     let s:comment_grey = s:colors.comment_grey
@@ -285,6 +296,19 @@ augroup colorset
     " LSP signature colors.
     autocmd ColorScheme * call onedark#set_highlight("NormalFloat", { "fg": s:foreground, "bg": s:background })
     autocmd ColorScheme * call onedark#set_highlight("FloatBorder", { "fg": s:comment_grey, "bg": s:background })
+    " nvim-tree colors.
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeSymlink", { "fg": s:cyan })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeFolderIcon", { "fg": s:blue })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeFolderName", { "fg": s:blue })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeOpenedFolderName", { "fg": s:blue })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeExecFile", { "fg": s:green })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitDeleted", { "fg": s:red, "gui": "bold" })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitDirty", { "fg": s:purple, "gui": "bold" })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitIgnored", { "fg": s:comment_grey })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitMerge", { "fg": s:red, "gui": "bold" })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitNew", { "fg": s:yellow, "gui": "bold" })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitRenamed", { "fg": s:purple, "gui": "bold" })
+    autocmd ColorScheme * call onedark#set_highlight("NvimTreeGitStaged", { "fg": s:green, "gui": "bold" })
 augroup END
 augroup colorextend
     autocmd!
@@ -370,6 +394,10 @@ local prettierMarkdown = {  -- npm install -g prettier
     formatCommand = "prettier ${--tab-width:tabWidth} --parser markdown",
     formatStdin = true,
 }
+local prettierToml = {  -- npm install -g prettier prettier-plugin-toml --save-dev --save-exact
+    formatCommand = "prettier --parser toml ${--tab-width:tabWidth} --stdin-filepath=${INPUT}",
+    formatStdin = true,
+}
 local prettierXml = {  -- npm install -g prettier
     formatCommand = "prettier --parser xml ${--tab-width:tabWidth} --print-width=160 --stdin-filepath=${INPUT}",
     formatStdin = true,
@@ -388,15 +416,16 @@ lspconfig.efm.setup {
             html = { prettierHtml },
             json = { prettierJson },
             markdown = { prettierMarkdown },
+            toml = { prettierToml },
             xml = { prettierXml },
             yaml = { prettierYaml },
         },
     },
-    filetypes = { "css", "html", "json", "markdown", "xml", "yaml" },
+    filetypes = { "css", "html", "json", "markdown", "toml", "xml", "yaml" },
 }
 
 -- nvim-cmp.
-local cmp = require "cmp"
+local cmp = require("cmp")
 cmp.setup {
     mapping = {
         ["<C-Space>"] = cmp.mapping.complete(),
@@ -424,8 +453,73 @@ cmp.setup {
     },
 }
 
--- LSP signature.
--- require("lsp_signature").setup()
+-- nvim-surround
+require("nvim-surround").setup {
+    delimiters = {
+        pairs = {
+            ["("] = {"(", ")" },
+            ["{"] = {"{", "}" },
+            ["<"] = {"<", ">" },
+            ["["] = {"[", "]" },
+        },
+    },
+}
+
+-- nvim-tree
+require("nvim-tree").setup {
+    git = {
+        ignore = false,
+    },
+    renderer = {
+        add_trailing = true,
+        highlight_git = true,
+        -- highlight_opened_files = "all",
+        icons = {
+            git_placement = "after",
+            glyphs = {
+                default = "",
+                symlink = "",
+                folder = {
+                    arrow_closed = "▸",
+                    arrow_open = "▾",
+                    default = "▸",
+                    open = "▾",
+                    empty = "▸",
+                    empty_open = "▾",
+                    symlink = "▸",
+                    symlink_open = "▾",
+                },
+                git = {
+                    unstaged = "*",
+                    staged = "✓",
+                    unmerged = "?",
+                    renamed = "➜",
+                    untracked = "*",
+                    deleted = "✗",
+                    ignored = "",
+                },
+            },
+            show = {
+                file = true,
+                folder = true,
+                folder_arrow = false,
+            },
+            symlink_arrow = " ➛ ",
+            webdev_colors = false,
+        },
+        -- indent_markers = {
+        --     enable = true,
+        -- },
+        special_files = {},
+        symlink_destination = true,
+    },
+    view = {
+        number = true,
+        relativenumber = true,
+        signcolumn = "no",
+        -- preserve_window_proportions = true,
+    },
+}
 
 -- NVim Treesitter.
 require("nvim-treesitter.configs").setup {

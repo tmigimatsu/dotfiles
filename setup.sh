@@ -10,6 +10,7 @@ tic -x xterm-256color-italic.terminfo
 tic -x tmux-256color.terminfo
 
 ## nvim
+mkdir -p ../.config/nvim
 ln -s dotfiles/init.vim ../.config/nvim/init.vim
 ## MAC up to here.
 
