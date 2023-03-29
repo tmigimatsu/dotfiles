@@ -214,7 +214,7 @@ call plug#begin(stdpath('data') . '/plugged')
     Plug 'kylechui/nvim-surround'    " Surround characters.
     Plug 'ojroques/vim-oscyank'      " Yank to local clipboard.
     Plug 'neovim/nvim-lspconfig', { 'do': { -> InstallLspServers() } }  " Automatically launch language servers.
-    Plug 'nvim-treesitter/nvim-treesitter', { 'branch': '0.5-compat', 'do': ':TSUpdate' }  " LSP syntax highlighting.
+    Plug 'nvim-treesitter/nvim-treesitter',  " LSP syntax highlighting.
     Plug 'numToStr/Comment.nvim'     " Comment code.
     Plug 'tmigimatsu/barbar.nvim'    " Reorderable tabs.
     " Plug 'scrooloose/nerdtree', { 'on': 'NERDTree' }  " File explorer.
@@ -339,7 +339,7 @@ vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
 
 -- Add LSP completion capabilities via cmp-nvim-lsp.
 local capabilities = vim.lsp.protocol.make_client_capabilities()
-capabilities = require("cmp_nvim_lsp").update_capabilities(capabilities)
+capabilities = require("cmp_nvim_lsp").default_capabilities(capabilities)
 
 local servers = {
     "bashls",    -- npm install -g bash-language-server
@@ -523,7 +523,7 @@ require("nvim-tree").setup {
 
 -- NVim Treesitter.
 require("nvim-treesitter.configs").setup {
-    ensure_installed = "maintained",  -- Exclude experimental parsers.
+    ensure_installed = "all",  -- Exclude experimental parsers.
     highlight = {
         enable = true,
         -- Setting regex_highlighting to true will run `:h syntax` and tree-sitter at the same time.
