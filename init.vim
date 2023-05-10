@@ -85,7 +85,7 @@ nnoremap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
 " Yank to clipboard.
 vnoremap <silent> <Leader>y :OSCYank<CR>
 
-nnoremap <Leader>e :lua vim.lsp.diagnostic.show_line_diagnostics()<CR>
+nnoremap <Leader>e :lua vim.diagnostic.open_float()<CR>
 nnoremap [e :lua vim.lsp.diagnostic.goto_prev()<CR>
 nnoremap ]e :lua vim.lsp.diagnostic.goto_next()<CR>
 nnoremap K :lua vim.lsp.buf.hover()<CR>
@@ -365,6 +365,7 @@ lspconfig.pylsp.setup {
           maxLineLength = 160,
         },
         pylint = { enabled = false },
+        pycodestyle={ enabled = false },
       },
     },
   },
@@ -372,6 +373,16 @@ lspconfig.pylsp.setup {
 lspconfig.clangd.setup {
   capabilities = capabilities,
   cmd = { "clangd", "--background-index", "--clang-tidy", "--fallback-style=google" },
+}
+lspconfig.yamlls.setup {
+  settings = {
+    yaml = {
+      keyOrdering = False,
+      schemaStore = {
+        enable = False,
+      },
+    },
+  },
 }
 
 -- Add extra LSP servers via efm.
