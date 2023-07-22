@@ -86,8 +86,8 @@ nnoremap <silent> <Leader>cd :cd %:p:h<CR>:pwd<CR>
 vnoremap <silent> <Leader>y :OSCYank<CR>
 
 nnoremap <Leader>e :lua vim.diagnostic.open_float()<CR>
-nnoremap [e :lua vim.lsp.diagnostic.goto_prev()<CR>
-nnoremap ]e :lua vim.lsp.diagnostic.goto_next()<CR>
+nnoremap [e :lua vim.diagnostic.goto_prev()<CR>
+nnoremap ]e :lua vim.diagnostic.goto_next()<CR>
 nnoremap K :lua vim.lsp.buf.hover()<CR>
 nnoremap <Leader>s :lua vim.lsp.buf.signature_help()<CR>
 nnoremap <Leader>S :lua vim.lsp.buf.document_symbol()<CR>
@@ -190,7 +190,6 @@ function InstallLspServers()
         \ . 'python-lsp-black '
         \ . 'pyls-flake8 '
         \ . 'pylsp-mypy '
-        \ . 'pylint '
     execute '!ln -s ~/.local/pipx/venvs/python-lsp-server/bin/flake8 ~/.local/bin'
     let uname = system('uname')
     if uname == 'Darwin'
@@ -361,11 +360,14 @@ lspconfig.pylsp.setup {
   settings = {
     pylsp = {
       plugins = {
+        black = { enabled = true },
         flake8 = {
           maxLineLength = 160,
         },
-        pylint = { enabled = false },
         pycodestyle={ enabled = false },
+        pylint = { enabled = false },
+        pyls_isort = { enabled = true },
+        pylsp_mypy = { enabled = true },
       },
     },
   },
