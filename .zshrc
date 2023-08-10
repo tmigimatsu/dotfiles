@@ -201,16 +201,16 @@ export PATH="${HOME}/.local/bin:${PATH}"
 ### Execute ###
 ###############
 
-if [[ -z $TMUX ]]; then
-	if [[ -n $SSH_CLIENT ]]; then
-		tp b
-	fi
-	if [[ -z $(pgrep tmux) ]]; then
-		tmux new-session
-	elif [[ -z $(tmux list-clients) ]]; then
-		tmux attach -d
-	fi
-fi
+# if [[ -z $TMUX ]]; then
+# 	if [[ -n $SSH_CLIENT ]]; then
+# 		tp b
+# 	fi
+# 	if [[ -z $(pgrep tmux) ]]; then
+# 		tmux new-session
+# 	elif [[ -z $(tmux list-clients) ]]; then
+# 		tmux attach -d
+# 	fi
+# fi
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh" || true
