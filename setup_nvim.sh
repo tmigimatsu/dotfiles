@@ -6,9 +6,9 @@ sudo apt install curl
 
 # nvim
 cd ~
-#mkdir -p .config/nvim
-#ln -s ../../dotfiles/init.vim .config/nvim/init.vim
-#ln -s dotfiles/init.vim .nvimrc
+mkdir -p .config/nvim
+ln -s ../../dotfiles/init.vim .config/nvim/init.vim
+ln -s dotfiles/init.vim .nvimrc
 
 mkdir -p .local/bin
 cd .local/bin
