@@ -346,7 +346,7 @@ require("Comment").setup()
 --     "cssls",     -- npm install -g vscode-langservers-extracted
 --     "html",      -- npm install -g vscode-langservers-extracted
 --     "jsonls",    -- npm install -g vscode-langservers-extracted
---     "tsserver",  -- npm install -g typescript typescript-language-server
+--     "ts_ls",  -- npm install -g typescript typescript-language-server
 --     "vimls",     -- npm install -g vim-language-server
 --     "yamlls",    -- npm install -g yaml-language-server
 -- }
